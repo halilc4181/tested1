@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Menü Sistemi | Lezzet Durağı</title>
+    <meta name="description" content="Dijital QR menü sistemi ile kolayca sipariş verin" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@300;400;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="min-h-screen bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-md sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-4">
+                    <button id="toggleSidebar" class="p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors">
+                        <i data-lucide="menu" class="h-6 w-6"></i>
+                    </button>
+                    
+                    <div class="flex items-center space-x-3">
+                        <img id="restaurantLogo" src="https://images.pexels.com/photos/1199960/pexels-photo-1199960.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Restaurant Logo" class="h-10 w-10 rounded-full object-cover">
+                        <div>
+                            <h1 id="restaurantName" class="text-xl font-bold text-gray-900">Lezzet Durağı</h1>
+                            <p class="text-sm text-gray-500">QR Menü</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Category Grid -->
+    <div id="categoryGrid" class="bg-white border-b border-gray-200 px-4 py-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="categoryContainer">
+                <!-- Categories will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Filter -->
+    <div class="sticky top-16 z-30 bg-white border-b border-gray-200 px-4 py-3">
+        <div class="flex space-x-2 overflow-x-auto scrollbar-hide" id="categoryFilter">
+            <!-- Filter buttons will be loaded here -->
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="mb-6">
+            <h2 id="sectionTitle" class="text-2xl font-bold text-gray-900">Tüm Ürünler</h2>
+            <p id="productCount" class="text-gray-600 mt-1">0 ürün bulundu</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="productGrid">
+            <!-- Products will be loaded here -->
+        </div>
+
+        <div id="noProducts" class="text-center py-12 hidden">
+            <div class="text-gray-400 text-6xl mb-4">🍽️</div>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">Ürün bulunamadı</h3>
+            <p class="text-gray-600">Bu kategoride henüz ürün bulunmuyor.</p>
+        </div>
+    </main>
+
+    <!-- Bottom Navigation (Mobile) -->
+    <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 md:hidden z-50">
+        <div class="grid grid-cols-4 h-16">
+            <button onclick="goHome()" class="flex flex-col items-center justify-center space-y-1 text-gray-600 hover:text-yellow-600">
+                <i data-lucide="home" class="h-5 w-5"></i>
+                <span class="text-xs">Anasayfa</span>
+            </button>
+            <button onclick="openWhatsApp()" class="flex flex-col items-center justify-center space-y-1 text-gray-600 hover:text-green-600">
+                <i data-lucide="message-circle" class="h-5 w-5"></i>
+                <span class="text-xs">WhatsApp</span>
+            </button>
+            <button onclick="showWifiInfo()" class="flex flex-col items-center justify-center space-y-1 text-gray-600 hover:text-blue-600">
+                <i data-lucide="wifi" class="h-5 w-5"></i>
+                <span class="text-xs">WiFi</span>
+            </button>
+            <button onclick="showMobileMenu()" class="flex flex-col items-center justify-center space-y-1 text-gray-600 hover:text-yellow-600">
+                <i data-lucide="utensils" class="h-5 w-5"></i>
+                <span class="text-xs">Menü</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div id="sidebar" class="fixed left-0 top-0 h-full w-80 bg-white shadow-xl z-50 transform -translate-x-full transition-transform">
+        <div class="flex flex-col h-full">
+            <!-- Sidebar Header -->
+            <div class="flex items-center justify-between p-6 border-b">
+                <div class="flex items-center space-x-3">
+                    <img id="sidebarLogo" src="https://images.pexels.com/photos/1199960/pexels-photo-1199960.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Restaurant Logo" class="h-12 w-12 rounded-full object-cover">
+                    <div>
+                        <h2 id="sidebarName" class="text-lg font-bold text-gray-900">Lezzet Durağı</h2>
+                        <p class="text-sm text-gray-500">Hoş geldiniz</p>
+                    </div>
+                </div>
+                <button id="closeSidebar" class="p-2 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors">
+                    <i data-lucide="x" class="h-6 w-6"></i>
+                </button>
+            </div>
+
+            <!-- Sidebar Content -->
+            <div class="flex-1 overflow-y-auto p-6 space-y-6">
+                <!-- Contact Info -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-semibold text-gray-900">İletişim</h3>
+                    <div class="flex items-center space-x-3 text-gray-700">
+                        <i data-lucide="phone" class="h-5 w-5 text-gray-400"></i>
+                        <span id="restaurantPhone" class="text-sm">+90 212 555 0123</span>
+                    </div>
+                    <div class="flex items-start space-x-3 text-gray-700">
+                        <i data-lucide="map-pin" class="h-5 w-5 text-gray-400 mt-0.5"></i>
+                        <span id="restaurantAddress" class="text-sm">Beyoğlu, İstiklal Cad. No:123, İstanbul</span>
+                    </div>
+                </div>
+
+                <!-- WiFi Password -->
+                <div class="space-y-2">
+                    <h3 class="text-lg font-semibold text-gray-900">WiFi Şifresi</h3>
+                    <div class="flex items-center space-x-3">
+                        <i data-lucide="wifi" class="h-5 w-5 text-gray-400"></i>
+                        <span id="wifiPassword" class="text-sm font-mono bg-gray-100 px-3 py-2 rounded-md">lezzet2024</span>
+                    </div>
+                </div>
+
+                <!-- Social Media -->
+                <div class="space-y-3">
+                    <h3 class="text-lg font-semibold text-gray-900">Sosyal Medya</h3>
+                    <div id="socialMedia" class="space-y-2">
+                        <!-- Social media links will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Language Toggle -->
+                <div class="space-y-3">
+                    <h3 class="text-lg font-semibold text-gray-900">Dil</h3>
+                    <button onclick="toggleLanguage()" class="flex items-center space-x-3 w-full p-3 rounded-md bg-gray-50 hover:bg-gray-100 transition-colors">
+                        <i data-lucide="globe" class="h-5 w-5 text-gray-400"></i>
+                        <span id="languageToggle" class="text-sm text-gray-700">English</span>
+                    </button>
+                </div>
+
+                <!-- Feedback -->
+                <div class="space-y-3">
+                    <h3 class="text-lg font-semibold text-gray-900">Geri Bildirim</h3>
+                    <button onclick="openFeedbackModal()" class="flex items-center space-x-3 w-full p-3 rounded-md bg-gray-50 hover:bg-gray-100 transition-colors">
+                        <i data-lucide="message-square" class="h-5 w-5 text-gray-400"></i>
+                        <span class="text-sm text-gray-700">Görüş Bildir</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Call Waiter Section -->
+            <div class="p-6 border-t">
+                <div id="tableSelection" class="space-y-3 hidden">
+                    <h4 class="text-sm font-medium text-gray-700">Masa Seçin:</h4>
+                    <div class="grid grid-cols-2 gap-2" id="tableGrid">
+                        <!-- Tables will be loaded here -->
+                    </div>
+                    <div class="flex space-x-2">
+                        <button onclick="callWaiter()" id="callWaiterBtn" disabled class="flex-1 flex items-center justify-center space-x-2 bg-yellow-500 hover:bg-yellow-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white py-2 px-3 rounded-lg transition-colors font-medium text-sm">
+                            <i data-lucide="bell" class="h-4 w-4"></i>
+                            <span>Çağır</span>
+                        </button>
+                        <button onclick="cancelTableSelection()" class="px-3 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors text-sm">
+                            İptal
+                        </button>
+                    </div>
+                </div>
+                <button onclick="showTableSelection()" id="showTableSelectionBtn" class="w-full flex items-center justify-center space-x-2 bg-yellow-500 hover:bg-yellow-600 text-white py-3 px-4 rounded-lg transition-colors font-medium">
+                    <i data-lucide="bell" class="h-5 w-5"></i>
+                    <span>Garson Çağır</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Modal -->
+    <div id="productModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <!-- Modal content will be loaded here -->
+        </div>
+    </div>
+
+    <!-- Feedback Modal -->
+    <div id="feedbackModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-lg max-w-md w-full p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-gray-900">Geri Bildirim</h3>
+                <button onclick="closeFeedbackModal()" class="text-gray-400 hover:text-gray-600">
+                    <i data-lucide="x" class="h-6 w-6"></i>
+                </button>
+            </div>
+            <form id="feedbackForm" onsubmit="submitFeedback(event)">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Adınız</label>
+                        <input type="text" id="feedbackName" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">E-posta (Opsiyonel)</label>
+                        <input type="email" id="feedbackEmail" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Mesajınız</label>
+                        <textarea id="feedbackMessage" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500" required></textarea>
+                    </div>
+                    <div class="flex space-x-3">
+                        <button type="submit" class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-4 rounded-lg transition-colors">
+                            Gönder
+                        </button>
+                        <button type="button" onclick="closeFeedbackModal()" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+                            İptal
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Mobile Menu Modal -->
+    <div id="mobileMenuModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-lg max-w-sm w-full p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-gray-900">Kategoriler</h3>
+                <button onclick="closeMobileMenu()" class="text-gray-400 hover:text-gray-600">
+                    <i data-lucide="x" class="h-6 w-6"></i>
+                </button>
+            </div>
+            <div id="mobileMenuCategories" class="space-y-2">
+                <!-- Categories will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- WiFi Info Modal -->
+    <div id="wifiModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-lg max-w-sm w-full p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-gray-900">WiFi Bilgileri</h3>
+                <button onclick="closeWifiModal()" class="text-gray-400 hover:text-gray-600">
+                    <i data-lucide="x" class="h-6 w-6"></i>
+                </button>
+            </div>
+            <div class="text-center">
+                <i data-lucide="wifi" class="h-16 w-16 text-blue-500 mx-auto mb-4"></i>
+                <h4 class="text-lg font-medium text-gray-900 mb-2">WiFi Şifresi</h4>
+                <div class="bg-gray-100 p-4 rounded-lg mb-4">
+                    <span id="wifiModalPassword" class="text-xl font-mono font-bold text-gray-900">lezzet2024</span>
+                </div>
+                <button onclick="closeWifiModal()" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg transition-colors">
+                    Tamam
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overlay -->
+    <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>

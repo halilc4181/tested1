@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel | QR Menü Sistemi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body class="min-h-screen bg-gray-50">
+    <!-- Admin Login -->
+    <div id="adminLogin" class="min-h-screen flex items-center justify-center">
+        <div class="bg-white rounded-lg shadow-md max-w-md w-full p-6">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">Admin Girişi</h2>
+            <form id="loginForm" onsubmit="adminLogin(event)">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Kullanıcı Adı</label>
+                        <div class="relative">
+                            <i data-lucide="user" class="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400"></i>
+                            <input type="text" id="username" class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500" placeholder="Kullanıcı adınızı girin" required>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Şifre</label>
+                        <div class="relative">
+                            <i data-lucide="lock" class="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400"></i>
+                            <input type="password" id="password" class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500" placeholder="Şifrenizi girin" required>
+                        </div>
+                    </div>
+                    <div id="loginError" class="text-red-600 text-sm text-center hidden"></div>
+                    <button type="submit" class="w-full bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-4 rounded-md transition-colors">
+                        Giriş Yap
+                    </button>
+                </div>
+            </form>
+            <div class="mt-4 p-3 bg-gray-50 rounded-md text-sm text-gray-600">
+                <p class="font-medium mb-1">Demo Giriş Bilgileri:</p>
+                <p>Username: admin</p>
+                <p>Password: admin123</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="adminDashboard" class="hidden">
+        <!-- Header -->
+        <div class="bg-white shadow-md">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <h1 class="text-xl font-bold text-gray-900">Admin Panel</h1>
+                    <button onclick="adminLogout()" class="flex items-center space-x-2 text-red-600 hover:text-red-700">
+                        <i data-lucide="log-out" class="h-5 w-5"></i>
+                        <span>Çıkış</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="bg-white shadow-md">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex space-x-8 overflow-x-auto">
+                    <button onclick="showTab('stats')" class="tab-btn flex items-center space-x-2 px-4 py-4 border-b-2 font-medium text-sm transition-colors whitespace-nowrap border-yellow-500 text-yellow-600">
+                        <i data-lucide="bar-chart-3" class="h-5 w-5"></i>
+                        <span>İstatistikler</span>
+                    </button>
+                    <button onclick="showTab('products')" class="tab-btn flex items-center space-x-2 px-4 py-4 border-b-2 font-medium text-sm transition-colors whitespace-nowrap border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                        <i data-lucide="package" class="h-5 w-5"></i>
+                        <span>Ürünler</span>
+                    </button>
+                    <button onclick="showTab('categories')" class="tab-btn flex items-center space-x-2 px-4 py-4 border-b-2 font-medium text-sm transition-colors whitespace-nowrap border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                        <i data-lucide="grid-3x3" class="h-5 w-5"></i>
+                        <span>Kategoriler</span>
+                    </button>
+                    <button onclick="showTab('tables')" class="tab-btn flex items-center space-x-2 px-4 py-4 border-b-2 font-medium text-sm transition-colors whitespace-nowrap border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                        <i data-lucide="table" class="h-5 w-5"></i>
+                        <span>Masalar</span>
+                    </button>
+                    <button onclick="showTab('qr')" class="tab-btn flex items-center space-x-2 px-4 py-4 border-b-2 font-medium text-sm transition-colors whitespace-nowrap border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                        <i data-lucide="qr-code" class="h-5 w-5"></i>
+                        <span>QR Kodlar</span>
+                    </button>
+                    <button onclick="showTab('restaurant')" class="tab-btn flex items-center space-x-2 px-4 py-4 border-b-2 font-medium text-sm transition-colors whitespace-nowrap border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                        <i data-lucide="building" class="h-5 w-5"></i>
+                        <span>İşletme</span>
+                    </button>
+                    <button onclick="showTab('feedback')" class="tab-btn flex items-center space-x-2 px-4 py-4 border-b-2 font-medium text-sm transition-colors whitespace-nowrap border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                        <i data-lucide="message-square" class="h-5 w-5"></i>
+                        <span>Geri Bildirimler</span>
+                    </button>
+                    <button onclick="showTab('notifications')" class="tab-btn flex items-center space-x-2 px-4 py-4 border-b-2 font-medium text-sm transition-colors whitespace-nowrap border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                        <i data-lucide="bell" class="h-5 w-5"></i>
+                        <span>Bildirimler</span>
+                        <span id="notificationBadge" class="bg-red-500 text-white text-xs rounded-full px-2 py-1 hidden">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Content -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Stats Tab -->
+            <div id="statsTab" class="tab-content">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Toplam Ürün</p>
+                                <p id="totalProducts" class="text-3xl font-bold text-gray-900">0</p>
+                            </div>
+                            <i data-lucide="package" class="h-12 w-12 text-blue-500"></i>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Toplam Görüntülenme</p>
+                                <p id="totalViews" class="text-3xl font-bold text-gray-900">0</p>
+                            </div>
+                            <i data-lucide="eye" class="h-12 w-12 text-green-500"></i>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Toplam Beğeni</p>
+                                <p id="totalLikes" class="text-3xl font-bold text-gray-900">0</p>
+                            </div>
+                            <i data-lucide="heart" class="h-12 w-12 text-red-500"></i>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Ortalama Puan</p>
+                                <p id="averageRating" class="text-3xl font-bold text-gray-900">0%</p>
+                            </div>
+                            <i data-lucide="star" class="h-12 w-12 text-yellow-500"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Popular Products -->
+                <div class="bg-white rounded-lg shadow-md">
+                    <div class="p-6 border-b border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-900 flex items-center space-x-2">
+                            <i data-lucide="trending-up" class="h-5 w-5"></i>
+                            <span>Popüler Ürünler</span>
+                        </h3>
+                    </div>
+                    <div class="p-6">
+                        <div id="popularProducts" class="space-y-4">
+                            <!-- Popular products will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Products Tab -->
+            <div id="productsTab" class="tab-content hidden">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900">Ürün Yönetimi</h2>
+                    <button onclick="showProductForm()" class="flex items-center space-x-2 px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg transition-colors">
+                        <i data-lucide="plus" class="h-5 w-5"></i>
+                        <span>Yeni Ürün</span>
+                    </button>
+                </div>
+
+                <!-- Product Form -->
+                <div id="productForm" class="bg-white rounded-lg shadow-md p-6 mb-6 hidden">
+                    <h3 id="productFormTitle" class="text-lg font-semibold text-gray-900 mb-4">Yeni Ürün Ekle</h3>
+                    <form id="productFormElement" onsubmit="saveProduct(event)">
+                        <input type="hidden" id="productId">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Ürün Adı (TR)</label>
+                                <input type="text" id="productName" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Ürün Adı (EN)</label>
+                                <input type="text" id="productNameEn" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500" required>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Açıklama (TR)</label>
+                                <textarea id="productDescription" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500" required></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Açıklama (EN)</label>
+                                <textarea id="productDescriptionEn" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500" required></textarea>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Fiyat</label>
+                                <input type="number" id="productPrice" step="0.01" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Kategori</label>
+                                <select id="productCategory" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500" required>
+                                    <!-- Categories will be loaded here -->
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Görsel URL</label>
+                                <input type="url" id="productImage" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500" required>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-4 mb-6">
+                            <label class="flex items-center space-x-2">
+                                <input type="checkbox" id="productActive" class="rounded border-gray-300 text-yellow-600 focus:ring-yellow-500" checked>
+                                <span class="text-sm text-gray-700">Aktif</span>
+                            </label>
+                        </div>
+                        <div class="flex space-x-3">
+                            <button type="submit" class="flex items-center space-x-2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors">
+                                <i data-lucide="save" class="h-4 w-4"></i>
+                                <span>Kaydet</span>
+                            </button>
+                            <button type="button" onclick="hideProductForm()" class="flex items-center space-x-2 px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors">
+                                <i data-lucide="x" class="h-4 w-4"></i>
+                                <span>İptal</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Products List -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ürün</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kategori</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fiyat</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">İstatistikler</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Durum</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">İşlemler</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productsTableBody" class="bg-white divide-y divide-gray-200">
+                                <!-- Products will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categories Tab -->
+            <div id="categoriesTab" class="tab-content hidden">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900">Kategori Yönetimi</h2>
+                    <button onclick="showCategoryForm()" class="flex items-center space-x-2 px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg transition-colors">
+                        <i data-lucide="plus" class="h-5 w-5"></i>
+                        <span>Yeni Kategori</span>
+                    </button>
+                </div>
+
+                <!-- Category Form -->
+                <div id="categoryForm" class="bg-white rounded-lg shadow-md p-6 mb-6 hidden">
+                    <h3 id="categoryFormTitle" class="text-lg font-semibold text-gray-900 mb-4">Yeni Kategori Ekle</h3>
+                    <form id="categoryFormElement" onsubmit="saveCategory(event)">
+                        <input type="hidden" id="categoryId">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Kategori Adı (TR)</label>
+                                <input type="text" id="categoryName" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Kategori Adı (EN)</label>
+                                <input type="text" id="categoryNameEn" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500" required>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">İkon</label>
+                                <select id="categoryIcon" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500" required>
+                                    <option value="coffee">Coffee</option>
+                                    <option value="glass-water">Glass Water</option>
+                                    <option value="croissant">Croissant</option>
+                                    <option value="chef-hat">Chef Hat</option>
+                                    <option value="cake">Cake</option>
+                                    <option value="utensils">Utensils</option>
+                                    <option value="pizza">Pizza</option>
+                                    <option value="ice-cream">Ice Cream</option>
+                                    <option value="wine">Wine</option>
+                                    <option value="salad">Salad</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Sıra</label>
+                                <input type="number" id="categoryOrder" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Görsel URL</label>
+                                <input type="url" id="categoryImage" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-4 mb-6">
+                            <label class="flex items-center space-x-2">
+                                <input type="checkbox" id="categoryActive" class="rounded border-gray-300 text-yellow-600 focus:ring-yellow-500" checked>
+                                <span class="text-sm text-gray-700">Aktif</span>
+                            </label>
+                            <label class="flex items-center space-x-2">
+                                <input type="checkbox" id="categoryShowOnHome" class="rounded border-gray-300 text-yellow-600 focus:ring-yellow-500">
+                                <span class="text-sm text-gray-700">Anasayfada Göster</span>
+                            </label>
+                        </div>
+                        <div class="flex space-x-3">
+                            <button type="submit" class="flex items-center space-x-2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors">
+                                <i data-lucide="save" class="h-4 w-4"></i>
+                                <span>Kaydet</span>
+                            </button>
+                            <button type="button" onclick="hideCategoryForm()" class="flex items-center space-x-2 px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors">
+                                <i data-lucide="x" class="h-4 w-4"></i>
+                                <span>İptal</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Categories Grid -->
+                <div id="categoriesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    <!-- Categories will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Tables Tab -->
+            <div id="tablesTab" class="tab-content hidden">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900">Masa Yönetimi</h2>
+                    <button onclick="showTableForm()" class="flex items-center space-x-2 px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg transition-colors">
+                        <i data-lucide="plus" class="h-5 w-5"></i>
+                        <span>Yeni Masa</span>
+                    </button>
+                </div>
+
+                <!-- Table Form -->
+                <div id="tableForm" class="bg-white rounded-lg shadow-md p-6 mb-6 hidden">
+                    <h3 id="tableFormTitle" class="text-lg font-semibold text-gray-900 mb-4">Yeni Masa Ekle</h3>
+                    <form id="tableFormElement" onsubmit="saveTable(event)">
+                        <input type="hidden" id="tableId">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Masa Adı (TR)</label>
+                                <input type="text" id="tableName" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500" placeholder="Masa 1" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Masa Adı (EN)</label>
+                                <input type="text" id="tableNameEn" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500" placeholder="Table 1" required>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-4 mb-6">
+                            <label class="flex items-center space-x-2">
+                                <input type="checkbox" id="tableActive" class="rounded border-gray-300 text-yellow-600 focus:ring-yellow-500" checked>
+                                <span class="text-sm text-gray-700">Aktif</span>
+                            </label>
+                        </div>
+                        <div class="flex space-x-3">
+                            <button type="submit" class="flex items-center space-x-2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors">
+                                <i data-lucide="save" class="h-4 w-4"></i>
+                                <span>Kaydet</span>
+                            </button>
+                            <button type="button" onclick="hideTableForm()" class="flex items-center space-x-2 px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors">
+                                <i data-lucide="x" class="h-4 w-4"></i>
+                                <span>İptal</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Tables Grid -->
+                <div id="tablesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    <!-- Tables will be loaded here -->
+                </div>
+            </div>
+
+            <!-- QR Codes Tab -->
+            <div id="qrTab" class="tab-content hidden">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900">QR Kod Yönetimi</h2>
+                    <button onclick="showQRForm()" class="flex items-center space-x-2 px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg transition-colors">
+                        <i data-lucide="plus" class="h-5 w-5"></i>
+                        <span>Yeni QR Kod</span>
+                    </button>
+                </div>
+
+                <!-- QR Form -->
+                <div id="qrForm" class="bg-white rounded-lg shadow-md p-6 mb-6 hidden">
+                    <h3 id="qrFormTitle" class="text-lg font-semibold text-gray-900 mb-4">Yeni QR Kod Oluştur</h3>
+                    <form id="qrFormElement" onsubmit="saveQRCode(event)">
+                        <input type="hidden" id="qrId">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">QR Kod Adı</label>
+                                <input type="text" id="qrName" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500" placeholder="Masa 1 QR" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Masa</label>
+                                <select id="qrTable" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500" required>
+                                    <!-- Tables will be loaded here -->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">URL veya Metin</label>
+                            <input type="text" id="qrContent" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500" placeholder="https://example.com veya özel metin" required>
+                        </div>
+                        <div class="flex space-x-3">
+                            <button type="submit" class="flex items-center space-x-2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors">
+                                <i data-lucide="save" class="h-4 w-4"></i>
+                                <span>Oluştur</span>
+                            </button>
+                            <button type="button" onclick="hideQRForm()" class="flex items-center space-x-2 px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors">
+                                <i data-lucide="x" class="h-4 w-4"></i>
+                                <span>İptal</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- QR Codes Grid -->
+                <div id="qrCodesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    <!-- QR codes will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Restaurant Tab -->
+            <div id="restaurantTab" class="tab-content hidden">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900">İşletme Ayarları</h2>
+                    <button onclick="toggleRestaurantEdit()" id="editRestaurantBtn" class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg transition-colors">
+                        Düzenle
+                    </button>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <form id="restaurantForm" onsubmit="saveRestaurant(event)">
+                        <div class="space-y-6">
+                            <!-- Basic Information -->
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900 mb-4">Temel Bilgiler</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">İşletme Adı (TR)</label>
+                                        <input type="text" id="restaurantName" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500" disabled>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">İşletme Adı (EN)</label>
+                                        <input type="text" id="restaurantNameEn" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500" disabled>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Logo -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Logo URL</label>
+                                <input type="url" id="restaurantLogo" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500" disabled>
+                                <div class="mt-2">
+                                    <img id="logoPreview" src="" alt="Logo Preview" class="h-16 w-16 rounded-full object-cover">
+                                </div>
+                            </div>
+
+                            <!-- Contact Information -->
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900 mb-4">İletişim Bilgileri</h3>
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Telefon</label>
+                                        <input type="tel" id="restaurantPhone" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500" disabled>
+                                    </div>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Adres (TR)</label>
+                                            <textarea id="restaurantAddress" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500" disabled></textarea>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Adres (EN)</label>
+                                            <textarea id="restaurantAddressEn" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500" disabled></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- WiFi Password -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">WiFi Şifresi</label>
+                                <input type="text" id="restaurantWifi" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500" disabled>
+                            </div>
+
+                            <!-- Social Media -->
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900 mb-4">Sosyal Medya</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Instagram</label>
+                                        <input type="text" id="restaurantInstagram" placeholder="@username" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500" disabled>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Facebook</label>
+                                        <input type="text" id="restaurantFacebook" placeholder="PageName" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500" disabled>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Twitter</label>
+                                        <input type="text" id="restaurantTwitter" placeholder="@username" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500" disabled>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div id="restaurantFormButtons" class="flex space-x-3 pt-6 border-t border-gray-200 hidden">
+                                <button type="submit" class="flex items-center space-x-2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors">
+                                    <i data-lucide="save" class="h-4 w-4"></i>
+                                    <span>Kaydet</span>
+                                </button>
+                                <button type="button" onclick="cancelRestaurantEdit()" class="flex items-center space-x-2 px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors">
+                                    <i data-lucide="x" class="h-4 w-4"></i>
+                                    <span>İptal</span>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Feedback Tab -->
+            <div id="feedbackTab" class="tab-content hidden">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900">Geri Bildirimler</h2>
+                    <button onclick="clearAllFeedback()" class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors">
+                        Tümünü Sil
+                    </button>
+                </div>
+
+                <div id="feedbackList" class="space-y-4">
+                    <!-- Feedback items will be loaded here -->
+                </div>
+
+                <div id="noFeedback" class="text-center py-12 hidden">
+                    <i data-lucide="message-square" class="h-12 w-12 text-gray-400 mx-auto mb-4"></i>
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">Henüz geri bildirim yok</h3>
+                    <p class="text-gray-600">Müşterilerden gelen geri bildirimler burada görünecek.</p>
+                </div>
+            </div>
+
+            <!-- Notifications Tab -->
+            <div id="notificationsTab" class="tab-content hidden">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900">Garson Çağrıları</h2>
+                    <button onclick="clearAllNotifications()" class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors">
+                        Tümünü Sil
+                    </button>
+                </div>
+
+                <div id="notificationsList" class="space-y-4">
+                    <!-- Notifications will be loaded here -->
+                </div>
+
+                <div id="noNotifications" class="text-center py-12 hidden">
+                    <i data-lucide="bell" class="h-12 w-12 text-gray-400 mx-auto mb-4"></i>
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">Henüz garson çağrısı yok</h3>
+                    <p class="text-gray-600">Müşterilerden gelen garson çağrıları burada görünecek.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audio for notifications -->
+    <audio id="notificationSound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU7k9n1unEiBC13yO/eizEIHWq+8+OWT" type="audio/wav">
+    </audio>
+
+    <script src="admin.js"></script>
+</body>
+</html>
