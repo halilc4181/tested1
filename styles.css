@@ -42,6 +42,17 @@
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
+/* Modern category card styles */
+.category-card-modern {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.category-card-modern:hover {
+  background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+  border-color: rgba(234, 179, 8, 0.2);
+}
+
 /* Custom focus styles */
 input:focus,
 select:focus,
@@ -181,5 +192,110 @@ textarea:focus {
   .qr-code-container {
     page-break-inside: avoid;
     margin: 20px 0;
+  }
+}
+
+/* Search results styling */
+.search-results {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.search-result-item:hover {
+  background-color: #f8fafc;
+}
+
+/* Footer styles */
+footer {
+  background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+}
+
+footer a:hover {
+  transform: translateY(-1px);
+  transition: all 0.2s ease;
+}
+
+/* Enhanced button styles */
+.btn-gradient {
+  background: linear-gradient(135deg, #eab308 0%, #ca8a04 100%);
+  transition: all 0.3s ease;
+}
+
+.btn-gradient:hover {
+  background: linear-gradient(135deg, #ca8a04 0%, #a16207 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(234, 179, 8, 0.3);
+}
+
+/* Smooth transitions for all interactive elements */
+* {
+  transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Custom scrollbar for webkit browsers */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Improved form styling */
+.form-input {
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+}
+
+.form-input:focus {
+  border-color: #eab308;
+  box-shadow: 0 0 0 3px rgba(234, 179, 8, 0.1);
+}
+
+/* Enhanced modal styling */
+.modal-overlay {
+  backdrop-filter: blur(4px);
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Improved accessibility */
+.focus-visible:focus {
+  outline: 2px solid #eab308;
+  outline-offset: 2px;
+}
+
+/* Dark mode support preparation */
+@media (prefers-color-scheme: dark) {
+  .dark-mode-ready {
+    --bg-primary: #1f2937;
+    --bg-secondary: #374151;
+    --text-primary: #f9fafb;
+    --text-secondary: #d1d5db;
+    --border-color: #4b5563;
   }
 }

@@ -1,0 +1,32 @@
+[
+    {
+        "id": "1",
+        "name": "Masa 1",
+        "nameEn": "Table 1",
+        "isActive": true
+    },
+    {
+        "id": "2",
+        "name": "Masa 2",
+        "nameEn": "Table 2",
+        "isActive": true
+    },
+    {
+        "id": "3",
+        "name": "Masa 3",
+        "nameEn": "Table 3",
+        "isActive": true
+    },
+    {
+        "id": "4",
+        "name": "Masa 4",
+        "nameEn": "Table 4",
+        "isActive": true
+    },
+    {
+        "id": "5",
+        "name": "Masa 5",
+        "nameEn": "Table 5",
+        "isActive": true
+    }
+]

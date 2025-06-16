@@ -25,6 +25,10 @@ if (!file_exists($dataFile)) {
         'address' => 'Beyoğlu, İstiklal Cad. No:123, İstanbul',
         'addressEn' => 'Beyoğlu, İstiklal Street No:123, Istanbul',
         'wifiPassword' => 'lezzet2024',
+        'footerDescTr' => 'Modern teknoloji ile geleneksel lezzetleri buluşturan dijital menü deneyimi. QR kod ile kolayca sipariş verin, lezzetli anların tadını çıkarın.',
+        'footerDescEn' => 'Digital menu experience that brings together modern technology with traditional flavors. Order easily with QR code and enjoy delicious moments.',
+        'copyrightText' => '© 2024 Lezzet Durağı. Tüm hakları saklıdır.',
+        'poweredByText' => 'QR Menü Sistemi ile güçlendirilmiştir',
         'socialMedia' => [
             'instagram' => '@lezzetduragi',
             'facebook' => 'LezzetDuragiOfficial',

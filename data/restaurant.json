@@ -1,0 +1,18 @@
+{
+    "name": "Lezzet Dura\u011f\u0131",
+    "nameEn": "Taste Station",
+    "logo": "https:\/\/images.pexels.com\/photos\/1199960\/pexels-photo-1199960.jpeg?auto=compress&cs=tinysrgb&w=200",
+    "phone": "+90 212 555 0123",
+    "address": "Beyo\u011flu, \u0130stiklal Cad. No:123, \u0130stanbul",
+    "addressEn": "Beyo\u011flu, \u0130stiklal Street No:123, Istanbul",
+    "wifiPassword": "lezzet2024",
+    "footerDescTr": "Modern teknoloji ile geleneksel lezzetleri bulu\u015fturan dijital men\u00fc deneyimi. QR kod ile kolayca sipari\u015f verin, lezzetli anlar\u0131n tad\u0131n\u0131 \u00e7\u0131kar\u0131n.",
+    "footerDescEn": "Digital menu experience that brings together modern technology with traditional flavors. Order easily with QR code and enjoy delicious moments.",
+    "copyrightText": "\u00a9 2024 Lezzet Dura\u011f\u0131. T\u00fcm haklar\u0131 sakl\u0131d\u0131r.",
+    "poweredByText": "QR Men\u00fc Sistemi ile g\u00fc\u00e7lendirilmi\u015ftir",
+    "socialMedia": {
+        "instagram": "@lezzetduragi",
+        "facebook": "LezzetDuragiOfficial",
+        "twitter": "@lezzetduragi"
+    }
+}

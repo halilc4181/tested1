@@ -3,20 +3,99 @@ let currentLanguage = localStorage.getItem('language') || 'tr';
 let selectedCategory = '';
 let selectedTable = '';
 let userVotes = JSON.parse(localStorage.getItem('userVotes') || '{}');
+let allProducts = [];
+let allCategories = [];
+
+// Design settings - Load from server settings for global application
+let designSettings = {
+    categoryGridStyle: 'modern',
+    showCategoryGrid: true,
+    centerCategoryFilter: true,
+    scrollableCategoryFilter: false
+};
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
     lucide.createIcons();
+    loadDesignSettings();
     loadData();
     setupEventListeners();
     updateLanguage();
 });
+
+// Load design settings from server (global settings)
+async function loadDesignSettings() {
+    try {
+        const serverSettings = await fetch('api/design-settings.php').then(r => r.json());
+        designSettings = { ...designSettings, ...serverSettings };
+        applyDesignSettings();
+    } catch (error) {
+        console.error('Error loading design settings:', error);
+        // Use default settings if server settings fail
+        applyDesignSettings();
+    }
+}
+
+function applyDesignSettings() {
+    // Apply category grid visibility
+    const categoryGrid = document.getElementById('categoryGrid');
+    if (categoryGrid) {
+        categoryGrid.style.display = designSettings.showCategoryGrid ? 'block' : 'none';
+    }
+    
+    // Apply category filter centering and scrolling
+    const categoryFilterSection = document.getElementById('categoryFilterSection');
+    if (categoryFilterSection) {
+        const container = categoryFilterSection.querySelector('.max-w-7xl > div');
+        if (container) {
+            if (designSettings.centerCategoryFilter) {
+                container.classList.add('justify-center');
+                container.classList.remove('justify-start');
+            } else {
+                container.classList.remove('justify-center');
+                container.classList.add('justify-start');
+            }
+            
+            const filterContainer = container.querySelector('#categoryFilter');
+            if (filterContainer) {
+                if (designSettings.scrollableCategoryFilter) {
+                    filterContainer.classList.add('overflow-x-auto', 'scrollbar-hide');
+                    filterContainer.style.maxWidth = '100%';
+                } else {
+                    filterContainer.classList.remove('overflow-x-auto', 'scrollbar-hide');
+                    filterContainer.style.maxWidth = 'none';
+                }
+            }
+        }
+    }
+}
 
 // Setup event listeners
 function setupEventListeners() {
     // Sidebar toggle
     document.getElementById('toggleSidebar').addEventListener('click', openSidebar);
     document.getElementById('closeSidebar').addEventListener('click', closeSidebar);
+    
+    // Search functionality
+    const searchInput = document.getElementById('searchInput');
+    const mobileSearchInput = document.getElementById('mobileSearchInput');
+    const mobileSearchBtn = document.getElementById('mobileSearchBtn');
+    
+    if (searchInput) {
+        searchInput.addEventListener('input', handleSearch);
+        searchInput.addEventListener('focus', showSearchResults);
+        searchInput.addEventListener('blur', hideSearchResultsDelayed);
+    }
+    
+    if (mobileSearchInput) {
+        mobileSearchInput.addEventListener('input', handleMobileSearch);
+        mobileSearchInput.addEventListener('focus', showMobileSearchResults);
+        mobileSearchInput.addEventListener('blur', hideMobileSearchResultsDelayed);
+    }
+    
+    if (mobileSearchBtn) {
+        mobileSearchBtn.addEventListener('click', toggleMobileSearch);
+    }
     
     // Close modals when clicking overlay
     document.addEventListener('click', function(e) {
@@ -31,6 +110,167 @@ function setupEventListeners() {
             closeAllModals();
         }
     });
+    
+    // Close search results when clicking outside
+    document.addEventListener('click', function(e) {
+        const searchContainer = document.getElementById('searchInput')?.parentElement;
+        const mobileSearchContainer = document.getElementById('mobileSearchInput')?.parentElement;
+        
+        if (searchContainer && !searchContainer.contains(e.target)) {
+            hideSearchResults();
+        }
+        
+        if (mobileSearchContainer && !mobileSearchContainer.contains(e.target)) {
+            hideMobileSearchResults();
+        }
+    });
+}
+
+// Search functionality
+function handleSearch(e) {
+    const query = e.target.value.toLowerCase().trim();
+    const resultsContainer = document.getElementById('searchResults');
+    
+    if (query.length < 2) {
+        hideSearchResults();
+        return;
+    }
+    
+    const filteredProducts = allProducts.filter(product => 
+        product.isActive && (
+            product.name.toLowerCase().includes(query) ||
+            product.nameEn.toLowerCase().includes(query) ||
+            product.description.toLowerCase().includes(query) ||
+            product.descriptionEn.toLowerCase().includes(query)
+        )
+    );
+    
+    displaySearchResults(filteredProducts, resultsContainer);
+    showSearchResults();
+}
+
+function handleMobileSearch(e) {
+    const query = e.target.value.toLowerCase().trim();
+    const resultsContainer = document.getElementById('mobileSearchResults');
+    
+    if (query.length < 2) {
+        hideMobileSearchResults();
+        return;
+    }
+    
+    const filteredProducts = allProducts.filter(product => 
+        product.isActive && (
+            product.name.toLowerCase().includes(query) ||
+            product.nameEn.toLowerCase().includes(query) ||
+            product.description.toLowerCase().includes(query) ||
+            product.descriptionEn.toLowerCase().includes(query)
+        )
+    );
+    
+    displaySearchResults(filteredProducts, resultsContainer);
+    showMobileSearchResults();
+}
+
+function displaySearchResults(products, container) {
+    if (products.length === 0) {
+        container.innerHTML = `
+            <div class="p-4 text-center text-gray-500">
+                <i data-lucide="search-x" class="h-8 w-8 mx-auto mb-2 text-gray-400"></i>
+                <p>Ürün bulunamadı</p>
+            </div>
+        `;
+    } else {
+        container.innerHTML = products.slice(0, 5).map(product => {
+            const category = allCategories.find(c => c.id === product.category);
+            return `
+                <div class="p-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0" onclick="selectSearchResult('${product.id}')">
+                    <div class="flex items-center space-x-3">
+                        <img src="${product.image}" alt="${currentLanguage === 'tr' ? product.name : product.nameEn}" class="w-12 h-12 rounded-lg object-cover">
+                        <div class="flex-1 min-w-0">
+                            <h4 class="font-medium text-gray-900 truncate">
+                                ${currentLanguage === 'tr' ? product.name : product.nameEn}
+                            </h4>
+                            <p class="text-sm text-gray-500 truncate">
+                                ${category ? (currentLanguage === 'tr' ? category.name : category.nameEn) : ''}
+                            </p>
+                            <p class="text-sm font-semibold text-yellow-600">₺${product.price}</p>
+                        </div>
+                        <div class="flex items-center space-x-1 text-xs text-gray-500">
+                            <i data-lucide="eye" class="h-3 w-3"></i>
+                            <span>${product.views}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+        
+        if (products.length > 5) {
+            container.innerHTML += `
+                <div class="p-3 text-center text-sm text-gray-500 bg-gray-50">
+                    +${products.length - 5} daha fazla sonuç
+                </div>
+            `;
+        }
+    }
+    
+    lucide.createIcons();
+}
+
+function selectSearchResult(productId) {
+    hideSearchResults();
+    hideMobileSearchResults();
+    clearSearchInputs();
+    openProductModal(productId);
+}
+
+function clearSearchInputs() {
+    const searchInput = document.getElementById('searchInput');
+    const mobileSearchInput = document.getElementById('mobileSearchInput');
+    
+    if (searchInput) searchInput.value = '';
+    if (mobileSearchInput) mobileSearchInput.value = '';
+}
+
+function showSearchResults() {
+    const container = document.getElementById('searchResults');
+    if (container) container.classList.remove('hidden');
+}
+
+function hideSearchResults() {
+    const container = document.getElementById('searchResults');
+    if (container) container.classList.add('hidden');
+}
+
+function hideSearchResultsDelayed() {
+    setTimeout(hideSearchResults, 150);
+}
+
+function showMobileSearchResults() {
+    const container = document.getElementById('mobileSearchResults');
+    if (container) container.classList.remove('hidden');
+}
+
+function hideMobileSearchResults() {
+    const container = document.getElementById('mobileSearchResults');
+    if (container) container.classList.add('hidden');
+}
+
+function hideMobileSearchResultsDelayed() {
+    setTimeout(hideMobileSearchResults, 150);
+}
+
+function toggleMobileSearch() {
+    const mobileSearchBar = document.getElementById('mobileSearchBar');
+    const isHidden = mobileSearchBar.classList.contains('hidden');
+    
+    if (isHidden) {
+        mobileSearchBar.classList.remove('hidden');
+        document.getElementById('mobileSearchInput').focus();
+    } else {
+        mobileSearchBar.classList.add('hidden');
+        hideMobileSearchResults();
+        clearSearchInputs();
+    }
 }
 
 // Data loading functions
@@ -43,11 +283,15 @@ async function loadData() {
             fetch('api/tables.php').then(r => r.json())
         ]);
         
+        allCategories = categories;
+        allProducts = products;
+        
         updateRestaurantInfo(restaurant);
         loadCategories(categories);
         loadProducts(products);
         loadTables(tables);
         loadCategoryGrid(categories);
+        updateFooterInfo(restaurant);
     } catch (error) {
         console.error('Error loading data:', error);
         showToast('Veri yüklenirken hata oluştu', 'error');
@@ -113,24 +357,107 @@ function updateRestaurantInfo(restaurant) {
     lucide.createIcons();
 }
 
+// Update footer information
+function updateFooterInfo(restaurant) {
+    const footerElements = {
+        'footerLogo': restaurant.logo,
+        'footerRestaurantName': currentLanguage === 'tr' ? restaurant.name : restaurant.nameEn,
+        'footerPhone': restaurant.phone,
+        'footerAddress': currentLanguage === 'tr' ? restaurant.address : restaurant.addressEn,
+        'footerWifi': restaurant.wifiPassword,
+        'footerCopyright': currentLanguage === 'tr' ? restaurant.name : restaurant.nameEn
+    };
+    
+    Object.entries(footerElements).forEach(([id, value]) => {
+        const element = document.getElementById(id);
+        if (element) {
+            if (element.tagName === 'IMG') {
+                element.src = value;
+                element.alt = restaurant.name;
+            } else {
+                element.textContent = value;
+            }
+        }
+    });
+    
+    // Update footer description
+    const footerDescription = document.getElementById('footerDescription');
+    if (footerDescription) {
+        const description = currentLanguage === 'tr' ? 
+            (restaurant.footerDescTr || 'Modern teknoloji ile geleneksel lezzetleri buluşturan dijital menü deneyimi. QR kod ile kolayca sipariş verin, lezzetli anların tadını çıkarın.') :
+            (restaurant.footerDescEn || 'Digital menu experience that brings together modern technology with traditional flavors. Order easily with QR code and enjoy delicious moments.');
+        footerDescription.textContent = description;
+    }
+    
+    // Update footer social media
+    const footerSocialMedia = document.getElementById('footerSocialMedia');
+    footerSocialMedia.innerHTML = '';
+    
+    if (restaurant.socialMedia.instagram) {
+        footerSocialMedia.innerHTML += `
+            <a href="https://instagram.com/${restaurant.socialMedia.instagram.replace('@', '')}" target="_blank" class="text-gray-400 hover:text-white transition-colors">
+                <i data-lucide="instagram" class="h-5 w-5"></i>
+            </a>
+        `;
+    }
+    
+    if (restaurant.socialMedia.facebook) {
+        footerSocialMedia.innerHTML += `
+            <a href="https://facebook.com/${restaurant.socialMedia.facebook}" target="_blank" class="text-gray-400 hover:text-white transition-colors">
+                <i data-lucide="facebook" class="h-5 w-5"></i>
+            </a>
+        `;
+    }
+    
+    if (restaurant.socialMedia.twitter) {
+        footerSocialMedia.innerHTML += `
+            <a href="https://twitter.com/${restaurant.socialMedia.twitter.replace('@', '')}" target="_blank" class="text-gray-400 hover:text-white transition-colors">
+                <i data-lucide="twitter" class="h-5 w-5"></i>
+            </a>
+        `;
+    }
+    
+    lucide.createIcons();
+}
+
 // Load category grid for homepage
 function loadCategoryGrid(categories) {
     const container = document.getElementById('categoryContainer');
     const homeCategories = categories.filter(cat => cat.isActive && cat.showOnHome);
     
-    container.innerHTML = homeCategories.map(category => `
-        <div class="category-card bg-white rounded-lg shadow-md p-4 cursor-pointer hover:shadow-lg transition-all" onclick="selectCategory('${category.id}')">
-            <div class="text-center">
-                ${category.image ? 
-                    `<img src="${category.image}" alt="${category.name}" class="w-16 h-16 mx-auto rounded-lg object-cover mb-3">` :
-                    `<div class="w-16 h-16 mx-auto bg-yellow-100 rounded-lg flex items-center justify-center mb-3">
-                        <i data-lucide="${category.icon}" class="h-8 w-8 text-yellow-600"></i>
-                    </div>`
-                }
-                <h3 class="font-medium text-gray-900">${currentLanguage === 'tr' ? category.name : category.nameEn}</h3>
+    if (designSettings.categoryGridStyle === 'modern') {
+        container.innerHTML = homeCategories.map(category => `
+            <div class="category-card-modern group bg-gradient-to-br from-white to-gray-50 rounded-xl shadow-lg p-6 cursor-pointer hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1" onclick="selectCategory('${category.id}')">
+                <div class="text-center">
+                    ${category.image ? 
+                        `<div class="relative mb-4">
+                            <img src="${category.image}" alt="${category.name}" class="w-20 h-20 mx-auto rounded-full object-cover ring-4 ring-yellow-100 group-hover:ring-yellow-200 transition-all">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-full"></div>
+                        </div>` :
+                        `<div class="w-20 h-20 mx-auto bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center mb-4 group-hover:from-yellow-500 group-hover:to-yellow-600 transition-all">
+                            <i data-lucide="${category.icon}" class="h-10 w-10 text-white"></i>
+                        </div>`
+                    }
+                    <h3 class="font-semibold text-gray-900 group-hover:text-yellow-600 transition-colors">${currentLanguage === 'tr' ? category.name : category.nameEn}</h3>
+                    <div class="w-8 h-0.5 bg-yellow-400 mx-auto mt-2 transform scale-x-0 group-hover:scale-x-100 transition-transform"></div>
+                </div>
             </div>
-        </div>
-    `).join('');
+        `).join('');
+    } else {
+        container.innerHTML = homeCategories.map(category => `
+            <div class="category-card bg-white rounded-lg shadow-md p-4 cursor-pointer hover:shadow-lg transition-all" onclick="selectCategory('${category.id}')">
+                <div class="text-center">
+                    ${category.image ? 
+                        `<img src="${category.image}" alt="${category.name}" class="w-16 h-16 mx-auto rounded-lg object-cover mb-3">` :
+                        `<div class="w-16 h-16 mx-auto bg-yellow-100 rounded-lg flex items-center justify-center mb-3">
+                            <i data-lucide="${category.icon}" class="h-8 w-8 text-yellow-600"></i>
+                        </div>`
+                    }
+                    <h3 class="font-medium text-gray-900">${currentLanguage === 'tr' ? category.name : category.nameEn}</h3>
+                </div>
+            </div>
+        `).join('');
+    }
     
     lucide.createIcons();
 }
@@ -630,6 +957,8 @@ function closeAllModals() {
         document.getElementById(modalId).classList.add('hidden');
     });
     closeSidebar();
+    hideSearchResults();
+    hideMobileSearchResults();
 }
 
 function showToast(message, type = 'success') {
