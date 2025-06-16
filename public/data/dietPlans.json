@@ -1,0 +1,73 @@
+[
+  {
+    "id": "1",
+    "patientId": "1",
+    "patientName": "Mehmet Yılmaz",
+    "title": "Kilo Verme Diyeti - Ocak 2024",
+    "createdDate": "2024-01-01",
+    "totalCalories": 1800,
+    "duration": "4 hafta",
+    "status": "active",
+    "type": "Kilo Verme",
+    "notes": "Düşük karbonhidrat diyeti",
+    "meals": [
+      {
+        "id": "1",
+        "name": "Kahvaltı",
+        "time": "08:00",
+        "calories": 450,
+        "foods": [
+          "2 dilim tam buğday ekmeği",
+          "1 haşlanmış yumurta",
+          "1 dilim beyaz peynir",
+          "5-6 adet zeytin",
+          "1 bardak çay"
+        ]
+      },
+      {
+        "id": "2",
+        "name": "Ara Öğün",
+        "time": "10:30",
+        "calories": 150,
+        "foods": [
+          "1 orta boy elma",
+          "10 adet çiğ badem"
+        ]
+      },
+      {
+        "id": "3",
+        "name": "Öğle Yemeği",
+        "time": "13:00",
+        "calories": 600,
+        "foods": [
+          "100 gr ızgara tavuk",
+          "1 porsiyon bulgur pilavı",
+          "1 kase mevsim salatası",
+          "1 bardak ayran"
+        ]
+      },
+      {
+        "id": "4",
+        "name": "Ara Öğün",
+        "time": "16:00",
+        "calories": 100,
+        "foods": [
+          "1 kase yoğurt",
+          "1 tatlı kaşığı bal"
+        ]
+      },
+      {
+        "id": "5",
+        "name": "Akşam Yemeği",
+        "time": "19:00",
+        "calories": 500,
+        "foods": [
+          "100 gr ızgara balık",
+          "1 porsiyon haşlanmış sebze",
+          "1 dilim tam buğday ekmeği",
+          "1 kase salata"
+        ]
+      }
+    ]
+  }
+]

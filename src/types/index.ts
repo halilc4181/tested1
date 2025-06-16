@@ -1,83 +1,79 @@
-export interface Product {
+export interface User {
   id: string;
-  name: string;
-  nameEn: string;
-  description: string;
-  descriptionEn: string;
-  price: number;
-  image: string;
-  category: string;
-  likes: number;
-  dislikes: number;
-  views: number;
-  isActive: boolean;
-  variations: ProductVariation[];
-  createdAt: Date;
-}
-
-export interface ProductVariation {
-  id: string;
-  name: string;
-  nameEn: string;
-  priceModifier: number;
-  isAvailable: boolean;
-}
-
-export interface Category {
-  id: string;
-  name: string;
-  nameEn: string;
-  icon: string;
-  order: number;
-  isActive: boolean;
-}
-
-export interface Restaurant {
-  name: string;
-  nameEn: string;
-  logo: string;
-  phone: string;
-  address: string;
-  addressEn: string;
-  wifiPassword: string;
-  socialMedia: {
-    instagram?: string;
-    facebook?: string;
-    twitter?: string;
-  };
-}
-
-export interface Table {
-  id: string;
-  name: string;
-  nameEn: string;
-  isActive: boolean;
-}
-
-export interface Theme {
-  primaryColor: string;
-  secondaryColor: string;
-  accentColor: string;
-  backgroundColor: string;
-  textColor: string;
-  fontFamily: string;
-  fontSize: {
-    small: string;
-    medium: string;
-    large: string;
-    xlarge: string;
-  };
-}
-
-export interface AdminUser {
-  id: string;
-  username: string;
   email: string;
-  role: 'admin' | 'manager';
+  name: string;
+  role: 'dietitian';
+  photo?: string;
 }
 
-export interface UserVotes {
-  [productId: string]: 'like' | 'dislike';
+export interface Patient {
+  id: string;
+  name: string;
+  surname: string;
+  age: number;
+  gender: 'Kadın' | 'Erkek';
+  phone: string;
+  email: string;
+  address: string;
+  height: number;
+  currentWeight: number;
+  targetWeight: number;
+  bmi: number;
+  registrationDate: string;
+  lastVisit: string;
+  medicalHistory: string;
+  allergies: string;
+  medications: string;
+  diseases: string;
+  doctorNotes: string;
+  goals: string;
+  status: 'active' | 'inactive';
+  weightHistory: WeightRecord[];
 }
 
-export type Language = 'tr' | 'en';
+export interface WeightRecord {
+  id: string;
+  patientId: string;
+  weight: number;
+  date: string;
+  notes?: string;
+}
+
+export interface Appointment {
+  id: string;
+  patientId: string;
+  patientName: string;
+  date: string;
+  time: string;
+  type: string;
+  status: 'confirmed' | 'completed' | 'cancelled' | 'pending';
+  notes: string;
+  duration: number;
+}
+
+export interface DietPlan {
+  id: string;
+  patientId: string;
+  patientName: string;
+  title: string;
+  createdDate: string;
+  totalCalories: number;
+  duration: string;
+  status: 'active' | 'completed' | 'paused';
+  type: string;
+  meals: Meal[];
+  notes: string;
+}
+
+export interface Meal {
+  id: string;
+  name: string;
+  time: string;
+  calories: number;
+  foods: string[];
+}
+
+export interface AuthState {
+  isAuthenticated: boolean;
+  user: User | null;
+}

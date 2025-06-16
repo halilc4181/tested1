@@ -1,0 +1,101 @@
+[
+  {
+    "id": "1",
+    "name": "Mehmet",
+    "surname": "Yılmaz",
+    "age": 32,
+    "gender": "Erkek",
+    "phone": "0532 123 4567",
+    "email": "mehmet@email.com",
+    "address": "İstanbul, Kadıköy",
+    "height": 175,
+    "currentWeight": 85,
+    "targetWeight": 80,
+    "bmi": 27.8,
+    "registrationDate": "2023-10-15",
+    "lastVisit": "2024-01-15",
+    "medicalHistory": "Tip 2 diabetes, hipertansiyon",
+    "allergies": "Fındık, deniz ürünleri",
+    "medications": "Metformin 500mg",
+    "diseases": "Diabetes Tip 2",
+    "doctorNotes": "Düzenli kontrol gerekli",
+    "goals": "Kilo verme, sağlıklı beslenme",
+    "status": "active",
+    "weightHistory": [
+      {
+        "id": "1",
+        "patientId": "1",
+        "weight": 95,
+        "date": "2023-10-15",
+        "notes": "İlk kayıt"
+      },
+      {
+        "id": "2",
+        "patientId": "1",
+        "weight": 92,
+        "date": "2023-11-15",
+        "notes": "İyi ilerleme"
+      },
+      {
+        "id": "3",
+        "patientId": "1",
+        "weight": 89,
+        "date": "2023-12-15",
+        "notes": "Hedefte"
+      },
+      {
+        "id": "4",
+        "patientId": "1",
+        "weight": 85,
+        "date": "2024-01-15",
+        "notes": "Mükemmel"
+      }
+    ]
+  },
+  {
+    "id": "2",
+    "name": "Ayşe",
+    "surname": "Demir",
+    "age": 28,
+    "gender": "Kadın",
+    "phone": "0533 987 6543",
+    "email": "ayse@email.com",
+    "address": "Ankara, Çankaya",
+    "height": 165,
+    "currentWeight": 62,
+    "targetWeight": 58,
+    "bmi": 22.8,
+    "registrationDate": "2023-11-01",
+    "lastVisit": "2024-01-12",
+    "medicalHistory": "Sağlıklı",
+    "allergies": "Yok",
+    "medications": "Yok",
+    "diseases": "Yok",
+    "doctorNotes": "Motivasyonu yüksek",
+    "goals": "Kilo verme, kas kazanımı",
+    "status": "active",
+    "weightHistory": [
+      {
+        "id": "5",
+        "patientId": "2",
+        "weight": 68,
+        "date": "2023-11-01",
+        "notes": "İlk kayıt"
+      },
+      {
+        "id": "6",
+        "patientId": "2",
+        "weight": 65,
+        "date": "2023-12-01",
+        "notes": "İyi gidiyor"
+      },
+      {
+        "id": "7",
+        "patientId": "2",
+        "weight": 62,
+        "date": "2024-01-12",
+        "notes": "Hedefte"
+      }
+    ]
+  }
+]
