@@ -1,0 +1,12 @@
+{
+  "id": "1",
+  "autoBackupEnabled": true,
+  "backupFrequency": 7,
+  "maxBackups": 10,
+  "lastBackupDate": "",
+  "backupLocation": "local",
+  "includeImages": false,
+  "compressionEnabled": true,
+  "encryptionEnabled": false,
+  "notificationEnabled": true
+}

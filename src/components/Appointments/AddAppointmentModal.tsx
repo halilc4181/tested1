@@ -13,14 +13,14 @@ export const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
   onClose, 
   editingAppointment 
 }) => {
-  const { patients, addAppointment, updateAppointment } = useData();
+  const { patients, settings, addAppointment, updateAppointment } = useData();
   const [formData, setFormData] = useState({
     patientId: '',
     date: '',
     time: '',
     type: '',
     notes: '',
-    duration: 30,
+    duration: settings.defaultAppointmentDuration,
     status: 'confirmed' as const,
   });
 
@@ -42,11 +42,11 @@ export const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
         time: '',
         type: '',
         notes: '',
-        duration: 30,
+        duration: settings.defaultAppointmentDuration,
         status: 'confirmed',
       });
     }
-  }, [editingAppointment]);
+  }, [editingAppointment, settings.defaultAppointmentDuration]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -181,15 +181,23 @@ export const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Süre (dakika)
                 </label>
-                <input
-                  type="number"
+                <select
                   name="duration"
-                  min="15"
-                  max="120"
                   value={formData.duration}
                   onChange={handleInputChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                />
+                >
+                  <option value={15}>15 dakika</option>
+                  <option value={20}>20 dakika</option>
+                  <option value={30}>30 dakika</option>
+                  <option value={45}>45 dakika</option>
+                  <option value={60}>60 dakika</option>
+                  <option value={90}>90 dakika</option>
+                  <option value={120}>120 dakika</option>
+                </select>
+                <p className="mt-1 text-xs text-gray-500">
+                  Varsayılan: {settings.defaultAppointmentDuration} dakika
+                </p>
               </div>
 
               {editingAppointment && (

@@ -72,7 +72,7 @@ export const Appointments: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Randevular</h1>
           <p className="mt-2 text-sm text-gray-600">
@@ -81,7 +81,7 @@ export const Appointments: React.FC = () => {
         </div>
         <button
           onClick={() => setIsAddModalOpen(true)}
-          className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
+          className="inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
         >
           <Plus className="h-4 w-4 mr-2" />
           Yeni Randevu
@@ -89,8 +89,8 @@ export const Appointments: React.FC = () => {
       </div>
 
       <div className="bg-white shadow-sm ring-1 ring-gray-900/5 rounded-xl">
-        <div className="p-6 border-b border-gray-200">
-          <div className="flex flex-col sm:flex-row gap-4">
+        <div className="p-4 sm:p-6 border-b border-gray-200">
+          <div className="flex flex-col gap-4">
             <div className="flex-1">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -103,17 +103,17 @@ export const Appointments: React.FC = () => {
                 />
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
               <input
                 type="date"
                 value={filterDate}
                 onChange={(e) => setFilterDate(e.target.value)}
-                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-emerald-500 focus:border-emerald-500"
+                className="flex-1 sm:flex-none border border-gray-300 rounded-md px-3 py-2 focus:ring-emerald-500 focus:border-emerald-500"
               />
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
-                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-emerald-500 focus:border-emerald-500"
+                className="flex-1 sm:flex-none border border-gray-300 rounded-md px-3 py-2 focus:ring-emerald-500 focus:border-emerald-500"
               >
                 <option value="all">Tüm Durumlar</option>
                 <option value="confirmed">Onaylandı</option>
@@ -141,8 +141,8 @@ export const Appointments: React.FC = () => {
             </div>
           ) : (
             sortedAppointments.map((appointment) => (
-              <div key={appointment.id} className="p-6 hover:bg-gray-50 transition-colors">
-                <div className="flex items-center justify-between">
+              <div key={appointment.id} className="p-4 sm:p-6 hover:bg-gray-50 transition-colors">
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
                   <div className="flex items-center space-x-4">
                     <div className="flex-shrink-0">
                       <div className="h-12 w-12 rounded-full bg-emerald-100 flex items-center justify-center">
@@ -150,15 +150,15 @@ export const Appointments: React.FC = () => {
                       </div>
                     </div>
                     <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                         <h3 className="text-sm font-medium text-gray-900">
                           {appointment.patientName}
                         </h3>
-                        <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(appointment.status)}`}>
+                        <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full w-fit ${getStatusColor(appointment.status)}`}>
                           {getStatusText(appointment.status)}
                         </span>
                       </div>
-                      <div className="mt-1 flex items-center gap-4 text-sm text-gray-500">
+                      <div className="mt-1 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-gray-500">
                         <div className="flex items-center">
                           <CalendarIcon className="h-3 w-3 mr-1" />
                           {new Date(appointment.date).toLocaleDateString('tr-TR')}
@@ -176,7 +176,7 @@ export const Appointments: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center justify-center sm:justify-end gap-2">
                     {appointment.status !== 'completed' && appointment.status !== 'cancelled' && (
                       <button
                         onClick={() => handleComplete(appointment)}

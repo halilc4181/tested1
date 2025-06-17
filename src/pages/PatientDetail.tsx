@@ -3,7 +3,9 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { User, Phone, Mail, Calendar, Edit, TrendingUp, Save, X, ArrowLeft } from 'lucide-react';
 import { PatientProgress } from '../components/PatientDetail/PatientProgress';
 import { PatientDietPlan } from '../components/PatientDetail/PatientDietPlan';
+import { PatientExerciseProgram } from '../components/PatientDetail/PatientExerciseProgram';
 import { PatientAppointments } from '../components/PatientDetail/PatientAppointments';
+import { PatientNotes } from '../components/PatientDetail/PatientNotes';
 import { useData } from '../contexts/DataContext';
 
 export const PatientDetail: React.FC = () => {
@@ -325,7 +327,12 @@ export const PatientDetail: React.FC = () => {
         </div>
       </div>
 
+      {/* Patient Notes Section */}
+      <PatientNotes patientId={patient.id} patientName={`${patient.name} ${patient.surname}`} />
+
       <PatientDietPlan patientId={patient.id} />
+
+      <PatientExerciseProgram patientId={patient.id} />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-white shadow-sm ring-1 ring-gray-900/5 rounded-xl p-6">

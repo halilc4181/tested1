@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Search, FileText, Clock, User, Edit, Trash2, Download, Eye, Sparkles } from 'lucide-react';
+import { Plus, Search, Dumbbell, Clock, User, Edit, Trash2, Eye, Sparkles, Target } from 'lucide-react';
 import { useData } from '../contexts/DataContext';
-import { AddDietPlanModal } from '../components/DietPlans/AddDietPlanModal';
-import { DietPlanDetailModal } from '../components/DietPlans/DietPlanDetailModal';
-import { AIDietPlanModal } from '../components/DietPlans/AIDietPlanModal';
+import { AddExerciseProgramModal } from '../components/ExercisePrograms/AddExerciseProgramModal';
+import { ExerciseProgramDetailModal } from '../components/ExercisePrograms/ExerciseProgramDetailModal';
+import { AIExerciseProgramModal } from '../components/ExercisePrograms/AIExerciseProgramModal';
 import { useLocation } from 'react-router-dom';
 
-export const DietPlans: React.FC = () => {
-  const { dietPlans, patients, deleteDietPlan } = useData();
+export const ExercisePrograms: React.FC = () => {
+  const { exercisePrograms, patients, deleteExerciseProgram } = useData();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isAIModalOpen, setIsAIModalOpen] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<any>(null);
-  const [editingPlan, setEditingPlan] = useState<any>(null);
+  const [selectedProgram, setSelectedProgram] = useState<any>(null);
+  const [editingProgram, setEditingProgram] = useState<any>(null);
   const [preSelectedPatientId, setPreSelectedPatientId] = useState<string>('');
   
   const location = useLocation();
@@ -26,31 +26,32 @@ export const DietPlans: React.FC = () => {
     }
   }, [location.state]);
 
-  const filteredPlans = dietPlans.filter(plan => {
+  const filteredPrograms = exercisePrograms.filter(program => {
     const matchesSearch = 
-      plan.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      plan.patientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      plan.type.toLowerCase().includes(searchTerm.toLowerCase());
+      program.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      program.patientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      program.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      program.goal.toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesFilter = filterStatus === 'all' || plan.status === filterStatus;
+    const matchesFilter = filterStatus === 'all' || program.status === filterStatus;
     return matchesSearch && matchesFilter;
   });
 
-  const handleDelete = (planId: string) => {
-    if (confirm('Bu diyet planını silmek istediğinizden emin misiniz?')) {
-      deleteDietPlan(planId);
+  const handleDelete = (programId: string) => {
+    if (confirm('Bu spor programını silmek istediğinizden emin misiniz?')) {
+      deleteExerciseProgram(programId);
     }
   };
 
-  const handleEdit = (plan: any) => {
-    setEditingPlan(plan);
+  const handleEdit = (program: any) => {
+    setEditingProgram(program);
     setIsAddModalOpen(true);
   };
 
   const handleCloseModal = () => {
     setIsAddModalOpen(false);
     setPreSelectedPatientId('');
-    setEditingPlan(null);
+    setEditingProgram(null);
   };
 
   const handleCloseAIModal = () => {
@@ -58,13 +59,39 @@ export const DietPlans: React.FC = () => {
     setPreSelectedPatientId('');
   };
 
+  const getDifficultyColor = (difficulty: string) => {
+    switch (difficulty) {
+      case 'beginner':
+        return 'bg-emerald-100 text-emerald-800';
+      case 'intermediate':
+        return 'bg-amber-100 text-amber-800';
+      case 'advanced':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getDifficultyText = (difficulty: string) => {
+    switch (difficulty) {
+      case 'beginner':
+        return 'Başlangıç';
+      case 'intermediate':
+        return 'Orta';
+      case 'advanced':
+        return 'İleri';
+      default:
+        return difficulty;
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Diyet Planları</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Spor Programları</h1>
           <p className="mt-2 text-sm text-gray-600">
-            Hasta diyet planlarınızı oluşturun ve yönetin ({dietPlans.length} plan)
+            Hasta spor programlarınızı oluşturun ve yönetin ({exercisePrograms.length} program)
           </p>
         </div>
         <div className="flex flex-col sm:flex-row gap-3">
@@ -93,7 +120,7 @@ export const DietPlans: React.FC = () => {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <input
                   type="text"
-                  placeholder="Diyet planı ara (başlık, hasta, tür)..."
+                  placeholder="Spor programı ara (başlık, hasta, tür, hedef)..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500"
@@ -106,7 +133,7 @@ export const DietPlans: React.FC = () => {
                 onChange={(e) => setFilterStatus(e.target.value)}
                 className="border border-gray-300 rounded-md px-3 py-2 focus:ring-emerald-500 focus:border-emerald-500"
               >
-                <option value="all">Tüm Planlar</option>
+                <option value="all">Tüm Programlar</option>
                 <option value="active">Aktif</option>
                 <option value="completed">Tamamlanan</option>
                 <option value="paused">Duraklatılan</option>
@@ -116,16 +143,16 @@ export const DietPlans: React.FC = () => {
         </div>
 
         <div className="divide-y divide-gray-200">
-          {filteredPlans.length === 0 ? (
+          {filteredPrograms.length === 0 ? (
             <div className="p-12 text-center">
-              <FileText className="mx-auto h-12 w-12 text-gray-400" />
+              <Dumbbell className="mx-auto h-12 w-12 text-gray-400" />
               <h3 className="mt-2 text-sm font-medium text-gray-900">
-                {searchTerm || filterStatus !== 'all' ? 'Plan bulunamadı' : 'Henüz diyet planı yok'}
+                {searchTerm || filterStatus !== 'all' ? 'Program bulunamadı' : 'Henüz spor programı yok'}
               </h3>
               <p className="mt-1 text-sm text-gray-500">
                 {searchTerm || filterStatus !== 'all' 
-                  ? 'Arama kriterlerinize uygun plan bulunmamaktadır.'
-                  : 'İlk diyet planınızı oluşturmak için yukarıdaki butonları kullanın.'
+                  ? 'Arama kriterlerinize uygun program bulunmamaktadır.'
+                  : 'İlk spor programınızı oluşturmak için yukarıdaki butonları kullanın.'
                 }
               </p>
               {!searchTerm && filterStatus === 'all' && (
@@ -148,75 +175,86 @@ export const DietPlans: React.FC = () => {
               )}
             </div>
           ) : (
-            filteredPlans.map((plan) => (
-              <div key={plan.id} className="p-4 sm:p-6 hover:bg-gray-50 transition-colors">
+            filteredPrograms.map((program) => (
+              <div key={program.id} className="p-4 sm:p-6 hover:bg-gray-50 transition-colors">
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
                   <div className="flex items-center space-x-4">
                     <div className="flex-shrink-0">
                       <div className="h-12 w-12 rounded-lg bg-emerald-100 flex items-center justify-center">
-                        <FileText className="h-6 w-6 text-emerald-600" />
+                        <Dumbbell className="h-6 w-6 text-emerald-600" />
                       </div>
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                         <h3 className="text-sm font-medium text-gray-900">
-                          {plan.title}
+                          {program.title}
                         </h3>
                         <div className="flex flex-wrap gap-2">
                           <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
-                            plan.status === 'active' 
+                            program.status === 'active' 
                               ? 'bg-emerald-100 text-emerald-800' 
-                              : plan.status === 'completed'
+                              : program.status === 'completed'
                               ? 'bg-blue-100 text-blue-800'
                               : 'bg-gray-100 text-gray-800'
                           }`}>
-                            {plan.status === 'active' ? 'Aktif' : 
-                             plan.status === 'completed' ? 'Tamamlandı' : 'Duraklatıldı'}
+                            {program.status === 'active' ? 'Aktif' : 
+                             program.status === 'completed' ? 'Tamamlandı' : 'Duraklatıldı'}
                           </span>
-                          <span className="inline-flex px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800">
-                            {plan.type}
+                          <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getDifficultyColor(program.difficulty)}`}>
+                            {getDifficultyText(program.difficulty)}
                           </span>
+                          {program.aiGenerated && (
+                            <span className="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-800">
+                              <Sparkles className="h-3 w-3 mr-1" />
+                              AI
+                            </span>
+                          )}
                         </div>
                       </div>
                       <div className="mt-1 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-gray-500">
                         <div className="flex items-center">
                           <User className="h-3 w-3 mr-1" />
-                          {plan.patientName}
+                          {program.patientName}
+                        </div>
+                        <div className="flex items-center">
+                          <Target className="h-3 w-3 mr-1" />
+                          {program.type}
                         </div>
                         <div className="flex items-center">
                           <Clock className="h-3 w-3 mr-1" />
-                          {plan.duration}
+                          {program.duration}
                         </div>
                         <span>
-                          Oluşturulma: {new Date(plan.createdDate).toLocaleDateString('tr-TR')}
+                          Haftada {program.frequency} gün
                         </span>
                       </div>
+                      <p className="mt-1 text-sm text-gray-600 line-clamp-2">{program.goal}</p>
                     </div>
                   </div>
 
                   <div className="flex flex-col sm:flex-row sm:items-center gap-4 lg:gap-6">
                     <div className="text-center">
-                      <p className="text-sm font-medium text-gray-900">Günlük Kalori</p>
-                      <p className="text-lg font-bold text-emerald-600">{plan.totalCalories}</p>
+                      <p className="text-sm font-medium text-gray-900">Antrenman Sayısı</p>
+                      <p className="text-lg font-bold text-emerald-600">{program.workouts.length}</p>
                     </div>
 
                     <div className="flex items-center justify-center sm:justify-end gap-2">
                       <button
-                        onClick={() => setSelectedPlan(plan)}
+                        onClick={() => setSelectedProgram(program)}
                         className="inline-flex items-center px-3 py-1 text-sm text-blue-600 hover:text-blue-700"
                         title="Detayları Görüntüle"
                       >
                         <Eye className="h-4 w-4" />
                       </button>
                       <button
-                        onClick={() => handleEdit(plan)}
+                        onClick={() => handleEdit(program)}
                         className="inline-flex items-center px-3 py-1 text-sm text-amber-600 hover:text-amber-700"
                         title="Düzenle"
                       >
                         <Edit className="h-4 w-4" />
                       </button>
                       <button
-                        onClick={() => handleDelete(plan.id)}
+                        onClick={() => handleDelete(program.id)}
                         className="inline-flex items-center px-3 py-1 text-sm text-red-600 hover:text-red-700"
                         title="Sil"
                       >
@@ -231,23 +269,23 @@ export const DietPlans: React.FC = () => {
         </div>
       </div>
 
-      <AddDietPlanModal
+      <AddExerciseProgramModal
         isOpen={isAddModalOpen}
         onClose={handleCloseModal}
         preSelectedPatientId={preSelectedPatientId}
-        editingPlan={editingPlan}
+        editingProgram={editingProgram}
       />
 
-      <AIDietPlanModal
+      <AIExerciseProgramModal
         isOpen={isAIModalOpen}
         onClose={handleCloseAIModal}
         preSelectedPatientId={preSelectedPatientId}
       />
 
-      {selectedPlan && (
-        <DietPlanDetailModal
-          plan={selectedPlan}
-          onClose={() => setSelectedPlan(null)}
+      {selectedProgram && (
+        <ExerciseProgramDetailModal
+          program={selectedProgram}
+          onClose={() => setSelectedProgram(null)}
           onEdit={handleEdit}
         />
       )}

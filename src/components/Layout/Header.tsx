@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { Menu, Bell, User, LogOut, Download, Upload, Settings, Camera } from 'lucide-react';
+import { Menu, Bell, User, LogOut, Download, Upload, Settings, Camera, Bot } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useData } from '../../contexts/DataContext';
 import { DataStorage } from '../../utils/dataStorage';
+import { ENV } from '../../config/environment';
+import { AIChatModal } from '../AI/AIChatModal';
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -13,6 +15,8 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
   const { patients, appointments, dietPlans } = useData();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+  const [showDeploymentInfo, setShowDeploymentInfo] = useState(false);
+  const [showAIChat, setShowAIChat] = useState(false);
   const [profileData, setProfileData] = useState({
     name: user?.name || '',
     photo: user?.photo || ''
@@ -58,10 +62,12 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
     return time.substring(0, 5);
   };
 
+  const deploymentInfo = ENV.getDeploymentInfo();
+
   return (
     <>
       <header className="sticky top-0 z-40 bg-white shadow-sm border-b border-gray-200">
-        <div className="flex h-16 items-center gap-x-6 px-4 sm:px-6 lg:px-8">
+        <div className="flex h-16 items-center gap-x-4 sm:gap-x-6 px-4 sm:px-6 lg:px-8">
           <button
             type="button"
             className="lg:hidden -m-2.5 p-2.5 text-gray-700 hover:text-gray-900"
@@ -72,7 +78,28 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
 
           <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
             <div className="flex flex-1"></div>
-            <div className="flex items-center gap-x-2">
+            <div className="flex items-center gap-x-4">
+              {/* AI Chat Button - Prominent Position */}
+              <button
+                onClick={() => setShowAIChat(true)}
+                className="relative inline-flex items-center px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all shadow-md hover:shadow-lg"
+                title="AI Asistan"
+              >
+                <Bot className="h-5 w-5 mr-2" />
+                <span className="hidden sm:inline text-sm font-medium">AI Asistan</span>
+              </button>
+
+              {/* Deployment Info Button (Development only) */}
+              {process.env.NODE_ENV === 'development' && (
+                <button
+                  onClick={() => setShowDeploymentInfo(!showDeploymentInfo)}
+                  className="relative -m-2.5 p-2.5 text-gray-400 hover:text-gray-500"
+                  title="Deployment Info"
+                >
+                  <Settings className="h-5 w-5" />
+                </button>
+              )}
+
               <button
                 onClick={handleExportData}
                 className="relative -m-2.5 p-2.5 text-gray-400 hover:text-gray-500"
@@ -236,6 +263,40 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
           </div>
         </div>
       </header>
+
+      {/* AI Chat Modal */}
+      <AIChatModal
+        isOpen={showAIChat}
+        onClose={() => setShowAIChat(false)}
+      />
+
+      {/* Deployment Info Modal (Development only) */}
+      {showDeploymentInfo && process.env.NODE_ENV === 'development' && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex min-h-screen items-center justify-center p-4">
+            <div className="fixed inset-0 bg-black bg-opacity-25" onClick={() => setShowDeploymentInfo(false)} />
+            
+            <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full">
+              <div className="p-6">
+                <h3 className="text-lg font-medium text-gray-900 mb-4">Deployment Info</h3>
+                <div className="space-y-2 text-sm">
+                  <div><strong>Current URL:</strong> {deploymentInfo.currentUrl}</div>
+                  <div><strong>Pathname:</strong> {deploymentInfo.pathname}</div>
+                  <div><strong>Base Path:</strong> {deploymentInfo.detectedBasePath || '(root)'}</div>
+                  <div><strong>API Path:</strong> {deploymentInfo.apiBasePath}</div>
+                  <div><strong>Is Subdirectory:</strong> {deploymentInfo.isSubdirectory ? 'Yes' : 'No'}</div>
+                </div>
+                <button
+                  onClick={() => setShowDeploymentInfo(false)}
+                  className="mt-4 w-full px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Overlay for closing dropdowns */}
       {(showNotifications || showProfile) && (

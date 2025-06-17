@@ -34,8 +34,8 @@ export const PatientCard: React.FC<PatientCardProps> = ({ patient }) => {
   };
 
   return (
-    <div className="p-6 hover:bg-gray-50 transition-colors">
-      <div className="flex items-center justify-between">
+    <div className="p-4 sm:p-6 hover:bg-gray-50 transition-colors">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
         <div className="flex items-center space-x-4">
           <div className="flex-shrink-0">
             <div className="h-12 w-12 rounded-full bg-emerald-100 flex items-center justify-center">
@@ -43,11 +43,11 @@ export const PatientCard: React.FC<PatientCardProps> = ({ patient }) => {
             </div>
           </div>
           <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2">
               <h3 className="text-sm font-medium text-gray-900">
                 {patient.name} {patient.surname}
               </h3>
-              <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
+              <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full w-fit ${
                 patient.status === 'active' 
                   ? 'bg-emerald-100 text-emerald-800' 
                   : 'bg-gray-100 text-gray-800'
@@ -55,7 +55,7 @@ export const PatientCard: React.FC<PatientCardProps> = ({ patient }) => {
                 {patient.status === 'active' ? 'Aktif' : 'Pasif'}
               </span>
             </div>
-            <div className="mt-1 flex items-center gap-4 text-sm text-gray-500">
+            <div className="mt-1 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-gray-500">
               <span>{patient.age} yaş, {patient.gender}</span>
               <div className="flex items-center">
                 <Phone className="h-3 w-3 mr-1" />
@@ -64,63 +64,67 @@ export const PatientCard: React.FC<PatientCardProps> = ({ patient }) => {
               {patient.email && (
                 <div className="flex items-center">
                   <Mail className="h-3 w-3 mr-1" />
-                  {patient.email}
+                  <span className="truncate">{patient.email}</span>
                 </div>
               )}
             </div>
           </div>
         </div>
 
-        <div className="flex items-center space-x-6">
-          <div className="text-center">
-            <p className="text-sm font-medium text-gray-900">Son Ziyaret</p>
-            <div className="flex items-center text-sm text-gray-500">
-              <Calendar className="h-3 w-3 mr-1" />
-              {formatDate(patient.lastVisit)}
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4 lg:gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+            <div>
+              <p className="text-xs sm:text-sm font-medium text-gray-900">Son Ziyaret</p>
+              <div className="flex items-center justify-center text-xs sm:text-sm text-gray-500">
+                <Calendar className="h-3 w-3 mr-1" />
+                <span className="truncate">{formatDate(patient.lastVisit)}</span>
+              </div>
+            </div>
+
+            <div>
+              <p className="text-xs sm:text-sm font-medium text-gray-900">Kilo Durumu</p>
+              <p className="text-xs sm:text-sm text-gray-600">
+                {patient.currentWeight} → {patient.targetWeight} kg
+              </p>
+            </div>
+
+            <div>
+              <p className="text-xs sm:text-sm font-medium text-gray-900">VKİ</p>
+              <div className="flex items-center justify-center">
+                <span className={`text-xs sm:text-sm font-medium ${getBMIColor(patient.bmi)}`}>
+                  {patient.bmi}
+                </span>
+                <span className="text-xs text-gray-500 ml-1">
+                  ({getBMILabel(patient.bmi)})
+                </span>
+              </div>
+            </div>
+
+            <div>
+              <p className="text-xs sm:text-sm font-medium text-gray-900">İlerleme</p>
+              <div className="flex items-center justify-center">
+                {isProgressing ? (
+                  <TrendingUp className="h-4 w-4 text-emerald-500 mr-1" />
+                ) : (
+                  <TrendingDown className="h-4 w-4 text-red-500 mr-1" />
+                )}
+                <span className={`text-xs sm:text-sm font-medium ${
+                  isProgressing ? 'text-emerald-600' : 'text-red-600'
+                }`}>
+                  %{Math.abs(progressPercentage)}
+                </span>
+              </div>
             </div>
           </div>
 
-          <div className="text-center">
-            <p className="text-sm font-medium text-gray-900">Kilo Durumu</p>
-            <p className="text-sm text-gray-600">
-              {patient.currentWeight} kg → {patient.targetWeight} kg
-            </p>
+          <div className="flex justify-center sm:justify-end">
+            <Link
+              to={`/patients/${patient.id}`}
+              className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
+            >
+              Detaylar
+            </Link>
           </div>
-
-          <div className="text-center">
-            <p className="text-sm font-medium text-gray-900">VKİ</p>
-            <div className="flex items-center justify-center">
-              <span className={`text-sm font-medium ${getBMIColor(patient.bmi)}`}>
-                {patient.bmi}
-              </span>
-              <span className="text-xs text-gray-500 ml-1">
-                ({getBMILabel(patient.bmi)})
-              </span>
-            </div>
-          </div>
-
-          <div className="text-center">
-            <p className="text-sm font-medium text-gray-900">İlerleme</p>
-            <div className="flex items-center">
-              {isProgressing ? (
-                <TrendingUp className="h-4 w-4 text-emerald-500 mr-1" />
-              ) : (
-                <TrendingDown className="h-4 w-4 text-red-500 mr-1" />
-              )}
-              <span className={`text-sm font-medium ${
-                isProgressing ? 'text-emerald-600' : 'text-red-600'
-              }`}>
-                %{Math.abs(progressPercentage)}
-              </span>
-            </div>
-          </div>
-
-          <Link
-            to={`/patients/${patient.id}`}
-            className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
-          >
-            Detaylar
-          </Link>
         </div>
       </div>
     </div>

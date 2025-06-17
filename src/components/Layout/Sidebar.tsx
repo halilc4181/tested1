@@ -1,15 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { 
-  Home, 
-  Users, 
-  Calendar, 
-  FileText, 
-  BarChart3, 
-  Settings, 
-  X,
-  Heart
-} from 'lucide-react';
+import { Home, Users, Calendar, FileText, BarChart3, Settings, X, Heart, Contact as FileContract, Dumbbell, Mail, DollarSign } from 'lucide-react';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -20,7 +11,11 @@ const navigation = [
   { name: 'Dashboard', href: '/', icon: Home },
   { name: 'Hastalar', href: '/patients', icon: Users },
   { name: 'Diyet Planları', href: '/diet-plans', icon: FileText },
+  { name: 'Spor Programları', href: '/exercise-programs', icon: Dumbbell },
   { name: 'Randevular', href: '/appointments', icon: Calendar },
+  { name: 'E-posta Hatırlatıcı', href: '/email-reminders', icon: Mail },
+  { name: 'Muhasebe', href: '/accounting', icon: DollarSign },
+  { name: 'Sözleşmeler', href: '/contracts', icon: FileContract },
   { name: 'Raporlar', href: '/reports', icon: BarChart3 },
   { name: 'Ayarlar', href: '/settings', icon: Settings },
 ];

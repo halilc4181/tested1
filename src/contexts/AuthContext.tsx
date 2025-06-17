@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User, AuthState } from '../types';
+import { apiService } from '../services/apiService';
 
 interface AuthContextType extends AuthState {
   login: (email: string, password: string) => Promise<boolean>;
@@ -32,26 +33,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const login = async (email: string, password: string): Promise<boolean> => {
-    // Demo login - in production, this would be a real API call
-    if (email === 'diyetisyen@email.com' && password === '123456') {
-      const user: User = {
-        id: '1',
-        email: 'diyetisyen@email.com',
-        name: 'Dr. Ayşe Kaya',
-        role: 'dietitian',
-        photo: '',
-      };
+    try {
+      const response = await apiService.login(email, password);
       
-      const newAuthState = {
-        isAuthenticated: true,
-        user,
-      };
-      
-      setAuthState(newAuthState);
-      localStorage.setItem('auth', JSON.stringify(newAuthState));
-      return true;
+      if (response.success) {
+        const newAuthState = {
+          isAuthenticated: true,
+          user: response.user,
+        };
+        
+        setAuthState(newAuthState);
+        localStorage.setItem('auth', JSON.stringify(newAuthState));
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Login failed:', error);
+      return false;
     }
-    return false;
   };
 
   const logout = () => {

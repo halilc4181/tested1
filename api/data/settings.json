@@ -1,0 +1,19 @@
+{
+  "id": "1",
+  "name": "Dr. Ayşe Kaya",
+  "title": "Diyetisyen",
+  "phone": "0532 123 4567",
+  "email": "diyetisyen@email.com",
+  "address": "İstanbul, Türkiye",
+  "license": "DYT-12345",
+  "specialization": "Klinik Beslenme",
+  "experience": "8 yıl",
+  "education": "Hacettepe Üniversitesi Beslenme ve Diyetetik Bölümü",
+  "defaultAppointmentDuration": 30,
+  "workingHours": {
+    "start": "09:00",
+    "end": "18:00"
+  },
+  "bio": "Klinik beslenme alanında uzman diyetisyen. Obezite, diyabet ve kardiyovasküler hastalıklar konularında deneyimli.",
+  "photo": ""
+}

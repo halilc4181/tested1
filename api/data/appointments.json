@@ -1,0 +1,35 @@
+[
+  {
+    "id": "1",
+    "patientId": "1",
+    "patientName": "Mehmet Yılmaz",
+    "date": "2024-01-20",
+    "time": "09:00",
+    "type": "Kontrol",
+    "status": "confirmed",
+    "notes": "Kilo kontrolü",
+    "duration": 30
+  },
+  {
+    "id": "2",
+    "patientId": "2",
+    "patientName": "Ayşe Demir",
+    "date": "2024-01-20",
+    "time": "10:30",
+    "type": "İlk Görüşme",
+    "status": "confirmed",
+    "notes": "İlk değerlendirme",
+    "duration": 45
+  },
+  {
+    "id": "3",
+    "patientId": "1",
+    "patientName": "Mehmet Yılmaz",
+    "date": "2024-01-22",
+    "time": "14:00",
+    "type": "Diyet Planı",
+    "status": "pending",
+    "notes": "Yeni diyet planı görüşmesi",
+    "duration": 60
+  }
+]
